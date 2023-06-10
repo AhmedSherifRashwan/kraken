@@ -1,9 +1,9 @@
 # imported modules and libraries
 import argparse
+import concurrent
 import socket
 import sys
 import subprocess
-import multiprocessing
 import requests
 print(''' _              _              
 | |            | |             
@@ -50,10 +50,10 @@ def check_robots_txt(host):
     else:
         print("No robots.txt file found.")
 
-
 # script arguments
 parser = argparse.ArgumentParser(description='Port Scanner')
 parser.add_argument('--host', help='Specify the host for port scanning')
+parser.add_argument('--verbose', help='Enable verbose output')
 
 args = parser.parse_args()
 if args.host:
@@ -63,7 +63,9 @@ if args.host:
     for port_no in range(1, 1001):
         port = scan_host(args.host, port_no)
         open_ports.append(port)
+    print('FOUND OPEN PORTS:')
     for open_port in open_ports:
+        print(open_ports[open_port])
         if open_port == 80:
             print(f"Web Server Detected on Port 80 for host {args.host}")
             print('<<<-----------------Gobuster Results---------------->>>')
@@ -73,4 +75,27 @@ if args.host:
     print('<<<-----------------Nmap Service Scan Results---------------->>>')
     print('running nmap service scan on host...')
     run_nmap_service_scan(args.host)
+if args.verbose:
+        print('<<<------------Port Scan Info---------------->>>')
+        print(f"Started a Common Port Scan on host: {args.host}")
 
+        open_ports = []
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Parallelize port scanning
+            port_range = range(1, 1001)
+            port_scan_results = executor.map(lambda port_no: scan_host(args.host, port_no), port_range)
+            open_ports.extend(port_scan_results)
+
+        for open_port in open_ports:
+            if open_port == 80:
+                print(f"Web Server Detected on Port 80 for host {args.host}")
+                print('<<<-----------------Gobuster Results---------------->>>')
+
+                # Parallelize gobuster and robots.txt checking
+                with concurrent.futures.ProcessPoolExecutor() as executor:
+                    executor.submit(run_gobuster, args.host)
+                    executor.submit(check_robots_txt, args.host)
+
+        print('<<<-----------------Nmap Service Scan Results---------------->>>')
+        print('running nmap service scan on host')
+        run_nmap_service_scan(args.host)
