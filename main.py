@@ -67,7 +67,7 @@ if args.host:
     for i in range(len(open_ports)):
         print(open_ports[i])
     for open_port in open_ports:
-        if open_port == 80:
+        if open_port == 80 or open_port == 8080 or open_port == 443:
             print(f"Web Server Detected on Port 80 for host {args.host}")
             print('<<<-----------------Gobuster Results---------------->>>')
             run_gobuster(args.host)
