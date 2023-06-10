@@ -64,8 +64,9 @@ if args.host:
         port = scan_host(args.host, port_no)
         open_ports.append(port)
     print('FOUND OPEN PORTS:')
+    for i in range(len(open_ports)):
+        print(open_ports[i])
     for open_port in open_ports:
-        print(open_ports[open_port])
         if open_port == 80:
             print(f"Web Server Detected on Port 80 for host {args.host}")
             print('<<<-----------------Gobuster Results---------------->>>')
