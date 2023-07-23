@@ -16,7 +16,7 @@ To run the script, you need to have the following tools and libraries installed 
 1. Clone the repository to your local machine using the following command: `git clone <repository_url>`
 2. Change into the cloned directory: `cd <repository_name>`
 3. Make sure you have the required tools installed (Python 3, Nmap, Gobuster) and the `requests` library.
-4. Run the script with the following command: `python port_scanner.py --host <target_host>`
+4. Run the script with the following command: `python kraken.py --host <target_host>`
 
 Replace `<target_host>` with the IP address or hostname of the target host you want to scan for open ports and services.
 
