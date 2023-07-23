@@ -66,20 +66,28 @@ args = parser.parse_args()
 if args.host:
     print('<<<------------Port Scan Info---------------->>>')
     print(f"Started a Common Port Scan on host: {args.host}")
+
     open_ports = []
-    for port_no in range(1, 1001):
-        port = scan_host(args.host, port_no)
-        open_ports.append(port)
-    print('FOUND OPEN PORTS:')
-    for i in range(len(open_ports)):
-        print(open_ports[i])
-    for open_port in open_ports:
-        if open_port == 80 or open_port == 8080 or open_port == 443:
-            print(f"Web Server Detected on Port 80 for host {args.host}")
-            print('<<<-----------------Gobuster Results---------------->>>')
-            run_gobuster(args.host)
-            print('Attempting to Retrieve Robots.txt file')
-            check_robots_txt(args.host)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Parallelize port scanning
+        port_range = range(1, 1001)
+        port_scan_results = executor.map(lambda port_no: scan_host(args.host, port_no), port_range)
+        open_ports.extend(port for port in port_scan_results if port is not None)
+
+    if not open_ports:
+        print("No open ports found.")
+    else:
+        print('FOUND OPEN PORTS:')
+        for port in open_ports:
+            print(port)
+
+        for open_port in open_ports:
+            if open_port in (80, 8080, 443):
+                print(f"Web Server Detected on Port {open_port} for host {args.host}")
+                print('<<<-----------------Gobuster Results---------------->>>')
+                run_gobuster(args.host)
+                print('Attempting to Retrieve Robots.txt file')
+                check_robots_txt(args.host)
     print('<<<-----------------Nmap Service Scan Results---------------->>>')
     print('running nmap service scan on host...')
     run_nmap_service_scan(args.host)
