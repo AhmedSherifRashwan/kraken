@@ -1,7 +1,5 @@
 # KraKen
 
-## Port Scanner and Service Detection
-
 This is a simple Python script that performs port scanning on a specified host and then attempts to detect the services running on the open ports using Nmap. Additionally, it runs Gobuster to search for common directories and attempts to retrieve the content of the robots.txt file if found.
 
 ## Requirements
