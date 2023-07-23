@@ -18,10 +18,17 @@ print('   --> Ahmed Rashwan || @Rsasec0x01')
 def scan_host(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(1)  # Adjust timeout as needed
-    result = sock.connect_ex((host, port))
-    if result == 0:
-        return port
-    sock.close()
+    try:
+        result = sock.connect_ex((host, port))
+        if result == 0:
+            return True  # Connection successful
+        else:
+            return False  # Connection failed
+    except Exception as e:
+        print(f"Error: {e}")
+        return False  # Connection failed due to an exception
+    finally:
+        sock.close()
 # run gobuster
 def run_gobuster(host):
     print('running gobuster with common.txt:')
